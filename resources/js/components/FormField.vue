@@ -1,6 +1,9 @@
 <template>
-    <default-field :field="field" :full-width-content="field.fullWidth" :show-help-text="false">
+    <default-field :field="field" :full-width-content="field.fullWidth" :show-help-text="false" class="relative">
         <template slot="field" :class="{'border-danger border': hasErrors}">
+            <div v-if="loading" class="flex justify-center items-center absolute pin z-50 bg-white">
+                <loader class="text-60" />
+            </div>
             <div :class="{'border-danger border': hasErrors}">
                 <div v-if="field.showToolbar" class="flex border-b-0 border border-40 relative">
                     <div v-if="preview" class="flex justify-center items-center absolute pin z-10 bg-white">
@@ -59,7 +62,8 @@ export default {
             selected: [],
             selectingAll: false,
             available: [],
-            preview: false
+            preview: false,
+            loading: true
         }
     },
     methods: {
@@ -72,12 +76,14 @@ export default {
                     .then((data) => {
                         this.selected = data.data.selected || [];
                         this.available = data.data.available || [];
+                        this.loading = false;
                     });
             }
             else {
                 Nova.request(baseUrl + this.resourceName + '/attachable/' + this.field.attribute)
                     .then((data) => {
                         this.available = data.data.available || [];
+                        this.loading = false;
                     });
             }
         },
